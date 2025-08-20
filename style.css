@@ -44328,13 +44328,15 @@ body .form-progress-step.completed.active .progress-step-icon {
 
 
  .listing-card-nl {
- 	display: flex;
- 	background-color: #fff;
- 	border-radius: 6px;
- 	width: 100%;
- 	/* overflow: hidden; */
- 	box-shadow: none;
-	border: 1px solid #e0e0e0;
+        position: relative;
+        padding-bottom: 80px; /* vytvoří místo pro avatar */
+        display: flex;
+        background-color: #fff;
+        border-radius: 6px;
+        width: 100%;
+        /* overflow: hidden; */
+        box-shadow: none;
+        border: 1px solid #e0e0e0;
  }
 
  .fs-listings  .listing-card-nl {
@@ -44457,11 +44459,31 @@ body .form-progress-step.completed.active .progress-step-icon {
  }
 
  .favorite-icon-nl:hover {
- 	transform: scale(1.1);
+        transform: scale(1.1);
  }
 
+ /* Listing Owner Avatar */
+ .listing-owner-avatar {
+        position: absolute;
+        bottom: 0;
+        right: 20px;
+        transform: translateY(50%);
+        width: 140px;
+        height: 140px;
+        border-radius: 50%;
+        overflow: hidden;
+        border: 10px solid #fff;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.05);
+        z-index: 20;
+ }
 
- /* --- Details Section (Right) --- */
+ .listing-owner-avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+ }
+
+/* --- Details Section (Right) --- */
  .listing-details-nl {
  	flex-grow: 1;
  	padding: 0;
