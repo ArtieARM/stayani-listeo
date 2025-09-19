@@ -1,0 +1,106 @@
+/*
+Theme Name:  Listeo ChildTheme
+Theme URI: http://listeo.pro
+Author: Purethemes
+Author URI: http://themeforest.net/user/purethemes
+Description: Directory WordPress Theme by Purethemes
+Version: 1.0
+License: ThemeForest
+License URI: http://themeforest.net/licenses
+Text Domain: listeo
+Domain Path: /languages/
+Tags: light, responsive-layout, post-formats, theme-options, translation-ready, two-columns
+Template:  listeo
+*/
+
+/* výchozí vzhled */
+.listing-owner-avatar{
+  opacity: 1;
+  transition: opacity 0.5s ease;  /* plynulé 1 s tam i zpět */
+}
+
+/* při prohlížení obrázku/šípek/srdíčka/badge → zmenši na 25 % */
+.listing-image-container-nl:hover .listing-owner-avatar,
+.listing-image-container-nl:focus-within .listing-owner-avatar{
+  opacity: .25;
+}
+
+/* výjimka: když najedu/focusnu přímo na avatar (včetně bílého kolečka okolo),
+   musí být 100 % viditelný */
+.listing-image-container-nl:hover .listing-owner-avatar:hover,
+.listing-image-container-nl:focus-within .listing-owner-avatar:hover,
+.listing-image-container-nl:hover .listing-owner-avatar:focus-within,
+.listing-image-container-nl:focus-within .listing-owner-avatar:focus-within,
+.listing-image-container-nl:hover .listing-owner-avatar:focus,
+.listing-image-container-nl:focus-within .listing-owner-avatar:focus{
+  opacity: 1;
+}
+
+/* podpora pro touch – třídu .is-touching přidá JS níže */
+.listing-image-container-nl.is-touching .listing-owner-avatar{ opacity: .25; }
+.listing-image-container-nl.is-touching .listing-owner-avatar.is-hot{ opacity: 1; }
+
+/* uživatelé s omezenými animacemi */
+@media (prefers-reduced-motion: reduce){
+  .listing-owner-avatar{ transition: none; }
+}
+
+/* hlavní fotka musí být relativní (už většinou je) */
+.single-listeo_listing .listeo-single-listing-gallery-grid .slg-half { position: relative; }
+
+/* POUZE avatar na hlavní fotce (vybraný přes ID) → levý dolní roh */
+#main-photo-avatar{
+  position: absolute;
+  left: 15px !important;    /* vlevo */
+  right: auto !important;   /* ruší případné staré right */
+  bottom: 15px !important;
+  top: auto !important;
+
+  width: 135px;
+  height: 135px;
+  padding: 5px;             /* bílý kroužek */
+  box-sizing: content-box;
+  background: #fff;
+  border-radius: 50%;
+  box-shadow: 0 8px 18px rgba(0,0,0,.14);
+  z-index: 40;
+
+  /* ring neklikatelný; kliká až fotka uvnitř */
+  pointer-events: none;
+}
+#main-photo-avatar .avatar-link{
+  display: block;
+  width: 100%; height: 100%;
+  border-radius: 50%;
+  overflow: hidden;
+  pointer-events: auto;
+}
+#main-photo-avatar .avatar-img{
+  width: 100%; height: 100%;
+  object-fit: cover; display: block;
+}
+
+/* menší offsety na užších displejích (volitelné) */
+@media (max-width: 768px){
+  #main-photo-avatar{ left: 15px; bottom: 15px; width: 135px; height: 135px; padding: 5px; }
+}
+
+/* Schovej jakýkoli známý přepínač grid/list (fallback k JS) */
+.layout-switcher, .layout-switcher-wrap { display: none !important; }
+
+/* Řádek s filtry a sortem jako flex */
+.listings-filters, .filters-container, .listings-header, .listings-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Sort doprava */
+.sort-by, .listing-sorting, .sort-by-select { margin-left: auto !important; }
+
+/* Mobile fallback – na malých šířkách vrať do běžného toku */
+@media (max-width: 991px){
+  .listings-filters, .filters-container, .listings-header, .listings-controls { flex-wrap: wrap; }
+  .sort-by, .listing-sorting, .sort-by-select { margin-left: 0 !important; }
+}
+.stayani-sort-right{ margin-left: auto !important; }
