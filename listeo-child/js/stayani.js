@@ -51,109 +51,67 @@
   }
 })();
 
-/* ===== Stayani: Half-map — hide layout switcher only (idempotent) ===== */
+/* ===== Stayani: Half-map tweaks (hide layout switcher + move Sort right) ===== */
 (function(){
-  if (window.__stayaniHideLayoutSwitcher) return;
-  window.__stayaniHideLayoutSwitcher = true;
+  if (window.__stayaniHalfMapTweaksInit) return;
+  window.__stayaniHalfMapTweaksInit = true;
 
-  function hideSwitchers(){
-    document.querySelectorAll('.layout-switcher, .layout-switcher-wrap').forEach(function(el){
-      // remove from DOM to prevent reappearance
-      if (el && el.parentNode) el.parentNode.removeChild(el);
-    });
-  }
+  function applyHalfMapTweaks(){
+    var container = document.querySelector('.half-map-container')
+                   || document.querySelector('.page-template-template-half-map-1')
+                   || document.querySelector('.page-template-template-half-map')
+                   || document.querySelector('.page-template-template-half-map-php');
+    if (!container) return;
 
-  function init(){
-    hideSwitchers();
-    if (window.jQuery){
-      jQuery(document).on('update_results_success ajaxComplete', hideSwitchers);
-    }
-    var mo = new MutationObserver(hideSwitchers);
-    mo.observe(document.body, {childList:true, subtree:true});
-  }
-
-  if (document.readyState === 'loading'){
-    document.addEventListener('DOMContentLoaded', init);
-  } else {
-    init();
-  }
-})();
-
-
-/* ===== Stayani: Half-map — Sort relocate V4 (robust, CZ-friendly) ===== */
-(function(){
-  if (window.__stayaniHalfMapSortRelocateV4) return;
-  window.__stayaniHalfMapSortRelocateV4 = true;
-
-  function inLeftPane(node){
-    return !!(node && node.closest && node.closest('.half-map-container .fs-left, .half-map-container .listings-container'));
-  }
-
-  function getFiltersRow(){
-    var pane = document.querySelector('.half-map-container .fs-left') || document.querySelector('.half-map-container .listings-container');
-    if (!pane) return null;
-    return pane.querySelector('.listings-filters') || pane.querySelector('.filters-container') || pane.querySelector('.listings-header') || pane.querySelector('.listings-controls');
-  }
-
-  function findSortCandidates(){
-    // Typical wrappers or selects likely to be the sorting control
-    var pane = document;
-    var nodes = Array.prototype.slice.call(pane.querySelectorAll(
-      '.sort-by, .listing-sorting, .sort-by-select, select[name*="sort"], select[id*="sort"], [class*="sort"] select'
-    ));
-
-    // Heuristic by text (CZ/EN)
-    var texts = /(Best Match|Featured|Nejlepší shoda|Doporucene|Doporučené|Nejnovější|Seřadit|Řazení)/i;
-    var more = Array.prototype.slice.call(pane.querySelectorAll('*')).filter(function(el){
-      if (!el || !el.textContent) return false;
-      return texts.test(el.textContent);
-    }).map(function(el){
-      return el.closest('.sort-by, .listing-sorting, .sort-by-select, .form-group, .btn-group, .dropdown, .bootstrap-select, .select2') || el;
+    // 1) hide any layout switchers within left pane
+    container.querySelectorAll('.layout-switcher, .layout-switcher-wrap').forEach(function(el){
+      el.style.display = 'none';
     });
 
-    nodes = nodes.concat(more);
-    // Deduplicate
-    var seen = new Set(), out = [];
-    nodes.forEach(function(n){
-      if (!n || !n.closest) return;
-      if (!inLeftPane(n)) return; // only left pane elements
-      var key = n;
-      try { key = n.outerHTML.slice(0,80); } catch(e){}
-      if (!seen.has(n)){
-        seen.add(n);
-        out.push(n);
-      }
-    });
-    return out;
-  }
-
-  function relocateOnce(){
-    var filters = getFiltersRow();
+    // 2) find left pane and filters row
+    var pane = container.querySelector('.fs-left') || container.querySelector('.listings-container') || container;
+    var filters = pane && (pane.querySelector('.listings-filters')
+                  || pane.querySelector('.filters-container')
+                  || pane.querySelector('.listings-header')
+                  || pane.querySelector('.listings-controls'));
     if (!filters) return;
 
-    // make row flex
+    // 3) find sort dropdown/button group
+    var sort = pane.querySelector('.sort-by, .listing-sorting, .sort-by-select, .btn-group.bootstrap-select, .dropdown.bootstrap-select');
+    if (!sort){
+      // fallback: element containing "Best Match" or "Featured"
+      var all = pane.querySelectorAll('*');
+      for (var i=0; i<all.length; i++){
+        var t = (all[i].textContent || '').trim();
+        if (/Best Match|Featured/i.test(t)){
+          sort = all[i].closest('.sort-by, .listing-sorting, .sort-by-select, .btn-group, .dropdown') || all[i];
+          break;
+        }
+      }
+    }
+    if (!sort) return;
+
+    // 4) move sort into filters row (right side) – idempotent
+    if (!filters.contains(sort)){
+      filters.appendChild(sort);
+    }
+    sort.classList.add('stayani-sort-right');
+
+    // ensure filters behave as a single row
     var fs = filters.style;
     if (!fs.display) fs.display = 'flex';
     if (!fs.alignItems) fs.alignItems = 'center';
     if (!fs.gap) fs.gap = '12px';
-
-    var candidates = findSortCandidates();
-    candidates.forEach(function(node){
-      // choose wrapper to move
-      var wrap = node.closest('.sort-by, .listing-sorting, .sort-by-select, .form-group, .btn-group, .dropdown, .bootstrap-select, .select2') || node;
-      if (!filters.contains(wrap)){
-        try { filters.appendChild(wrap); } catch(e){}
-      }
-      wrap.classList.add('stayani-sort-right');
-    });
   }
 
   function init(){
-    relocateOnce();
+    applyHalfMapTweaks();
     if (window.jQuery){
-      jQuery(document).on('update_results_success ajaxComplete', relocateOnce);
+      jQuery(document).on('update_results_success ajaxComplete', function(){
+        applyHalfMapTweaks();
+      });
     }
-    var mo = new MutationObserver(relocateOnce);
+    var mo = new MutationObserver(function(){ applyHalfMapTweaks(); });
     mo.observe(document.body, {childList:true, subtree:true});
   }
 
@@ -163,4 +121,3 @@
     init();
   }
 })();
-
