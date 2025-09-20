@@ -104,3 +104,132 @@ Template:  listeo
   .sort-by, .listing-sorting, .sort-by-select { margin-left: 0 !important; }
 }
 .stayani-sort-right{ margin-left: auto !important; }
+
+/* 1) Přepínač: vnitřní obaly bez přidaných mezer */
+.fullwidth-filters.ajax-search .sort-by,
+.fullwidth-filters.ajax-search .sort-by-select{
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* 2) Rodič přepínače: zkrať spodní mezeru bloku filtrů */
+.fullwidth-filters.ajax-search{
+  margin-bottom: 8px !important;   /* (původně je to vyšší) */
+  padding-bottom: 0 !important;
+}
+
+/* 3) Bezprostředně následující listings kontejner: zkrať horní mezeru */
+.fullwidth-filters.ajax-search + #listeo-listings-container{
+  margin-top: 8px !important;      /* kdyby pořád moc, dej 6px */
+  padding-top: 0 !important;
+}
+
+/* 4) Select2 samotné: jistota, že nepřidává vlastní vnější margin */
+.fullwidth-filters.ajax-search .select2.select2-container{
+  margin: 0 !important;
+}
+
+/* Stayani – úplně stáhni mezeru kolem sort přepínače (desktop) */
+@media (min-width: 992px){
+  .fullwidth-filters.ajax-search{
+    margin-bottom: 0 !important;
+    padding-bottom: 0 !important;
+  }
+  .fullwidth-filters.ajax-search + #listeo-listings-container{
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+  }
+  /* jistota, že Select2 sám nepřidává vnější okraje */
+  .fullwidth-filters.ajax-search .select2.select2-container{
+    margin: 0 !important;
+  }
+}
+
+/* === Stayani: Select2 anti-FOUT (dědění fontu) === */
+:root{
+  --stayani-font: "Inter", "Raleway", system-ui, -apple-system, "Segoe UI",
+                  Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif;
+}
+
+/* rodič přepínače + samotný Select2 a jeho výsledky */
+.fullwidth-filters,
+.fullwidth-filters .sort-by,
+.fullwidth-filters .sort-by-select,
+.fullwidth-filters .select2-container,
+.fullwidth-filters .select2-selection,
+.fullwidth-filters .select2-selection__rendered,
+.fullwidth-filters .select2-results__option{
+  font-family: var(--stayani-font) !important;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* sjednoť metriky, ať fonty „neskáčou“ při záměně */
+.fullwidth-filters .select2-selection__rendered{
+  line-height: 38px !important;   /* přizpůsob aktuální výšce selektu */
+  font-size: 15px !important;     /* drž konzistentní metriky */
+  font-weight: 500;               /* nebo 400/600 podle designu */
+}
+.fullwidth-filters .select2-selection--single{
+  height: 40px !important;        /* spolu s line-height výše */
+}
+
+/* --- Stayani: přitáhnout listings k přepínači o ~10 px --- */
+
+/* 0) Select2 obaly bez vnějších okrajů */
+.fullwidth-filters.ajax-search .sort-by,
+.fullwidth-filters.ajax-search .sort-by-select,
+.fullwidth-filters.ajax-search .select2.select2-container{
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* 1) Rodič filtrů: zamezit kolapsu marginů (flow-root), zrušit spodní mezeru */
+.fullwidth-filters.ajax-search{
+  display: flow-root;            /* nebo overflow: hidden; */
+  margin-bottom: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+/* 2) Wrapper okolo filtrů/hlavičky: nulovat případný row/column gap */
+.listings-filters,
+.filters-container,
+.listings-header,
+.listings-controls{
+  row-gap: 0 !important;
+  column-gap: 10px;              /* necháme jen horizontální rozestup */
+}
+
+/* 3) Bezprostřední soused s výsledky: úplná nula + jemné přitažení nahoru */
+.fullwidth-filters.ajax-search + #listeo-listings-container{
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+  position: relative;
+  top: -10px;                    /* bylo -12px; jemnější o 2px */
+}
+
+/* 4) Kdyby některý layout používal jiný kontejner než #listeo-listings-container */
+.fullwidth-filters.ajax-search + .listings-container{
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+  position: relative;
+  top: -10px;                    /* stejná hodnota jako výš */
+}
+
+/* 5) Extra jistota: první vnitřní .row nemá svůj „automatický“ top margin */
+#listeo-listings-container > .row:first-child,
+.listings-container > .row:first-child{
+  margin-top: 0 !important;
+}
+
+/* --- Stayani: zmenšit HORNÍ mezeru nad přepínačem --- */
+.fullwidth-filters.ajax-search .sort-by,
+.fullwidth-filters.ajax-search .sort-by-select,
+.fullwidth-filters.ajax-search .select2.select2-container{
+  position: relative !important;
+  top: -7px !important;   /* dolaď: -6 = menší efekt, -10 = více nahoru */
+}
+
+
+
